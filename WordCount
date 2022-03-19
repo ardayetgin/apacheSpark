@@ -1,0 +1,42 @@
+import findspark
+findspark.init()
+
+# SparkContext
+from pyspark.sql import SparkSession
+from pyspark.conf import SparkConf
+
+spark = SparkSession.builder \
+.master("local[4]") \
+.appName("Wordcount_Rdd") \
+.getOrCreate()
+
+
+sc = spark.sparkContext
+
+veri_dosyasi = "C:\\Users\\Y. Arda Yetgin\\Downloads\\omer_seyfettin_forsa_hikaye.txt"
+
+hikaye_rdd = sc.textFile(veri_dosyasi)
+
+
+hikaye_rdd.count()
+
+hikaye_rdd.take(5)
+
+kelimeler = hikaye_rdd.flatMap(lambda satir: satir.split(" "))
+
+kelimeler.take(10)
+
+kelime_sayilari = kelimeler.map(lambda kelime: (kelime,1))
+
+kelime_sayilari.take(5)
+
+kelime_sayilari_RBK = kelime_sayilari.reduceByKey(lambda x,y: x+y)
+
+kelime_sayilari_RBK.take(10)
+
+kelime_sayilari_RBK2 = kelime_sayilari_RBK.map(lambda x: (x[1], x[0]))
+
+kelime_sayilari_RBK2.take(10)
+
+kelime_sayilari_RBK2.sortByKey(False).take(20)
+
